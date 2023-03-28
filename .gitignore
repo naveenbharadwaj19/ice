@@ -45,3 +45,12 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+
+*.vscode
+
+*.env
+
+project-stuff/
+
+*.g.dart
