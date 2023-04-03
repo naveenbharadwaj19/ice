@@ -3,17 +3,17 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ice_ai/controllers/history_controller.dart';
 import 'package:ice_ai/domains/apis/open_ai.dart';
 import 'package:ice_ai/models/serializations/conversation_model.dart';
 
 class ConversationController extends GetxController {
   ScrollController scrollController = ScrollController();
-  GlobalKey<FormState> form = GlobalKey<FormState>();
   TextEditingController controller = TextEditingController();
   bool isLoading = false;
   RxList<ConversationModel> conversations = RxList<ConversationModel>();
   RxInt iceContentCount = 0.obs;
-  RxString iceContent = "".obs;
+  RxString iceContent = "naveen".obs;
   bool isAnimate = false;
 
   void updateIsAnimate(bool v) {
@@ -45,11 +45,22 @@ class ConversationController extends GetxController {
     }
   }
 
+  ///  [conversations]
+  /// [controller]
+  ///
+  /// update [updateIsLoading]
+  void get delete {
+    conversations.clear();
+    controller.clear();
+    updateIsLoading(false);
+  }
+
   final OpenAI _openAI = OpenAI();
 
-  Future<void> send() async {
+  Future<void> send(GlobalKey<FormState> form) async {
     if (form.currentState!.validate()) {
       updateIsLoading(true);
+      _createHistory();
       ConversationModel conversation = ConversationModel(
           user: MessagesModel(
               content: controller.text, currentDateTime: currentDateTime));
@@ -66,8 +77,9 @@ class ConversationController extends GetxController {
           controller.clear();
           conversations.refresh();
           updateIsLoading(false);
-          // Timer(Duration(milliseconds: 500), () => scrollDown);
-          _startTyping();
+          if (isAnimate) {
+            _startTyping();
+          }
         } else {
           print(res.statusCode);
           print(res.body);
@@ -77,6 +89,13 @@ class ConversationController extends GetxController {
       }
     }
   }
+
+  void _createHistory() {
+    if (conversations.isEmpty) {
+      Get.find<HistoryController>().createHistory(controller.text);
+    }
+  }
+
 
   @override
   void onClose() {

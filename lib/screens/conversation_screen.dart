@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
 import 'package:ice_ai/controllers/conversation_controller.dart';
+import 'package:ice_ai/screens/history_drawer.dart';
 import 'package:ice_ai/screens/widgets/conversation_toggle_switch.dart';
 
 import 'widgets/conversation_widget.dart';
-
 
 class ConversationScreen extends StatelessWidget {
   final ConversationController controller = Get.put(ConversationController());
@@ -15,11 +15,28 @@ class ConversationScreen extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Theme.of(context).primaryColor,
+        drawer: HistoryDrawer(),
         body: CustomScrollView(
-          controller: controller.scrollController,
+          controller: Get.find<ConversationController>().scrollController,
           slivers: [
             SliverAppBar(
               backgroundColor: Theme.of(context).primaryColor,
+              leading: Container(
+                margin: const EdgeInsets.all(5),
+                child: Builder(
+                  builder: (context) => Tooltip(
+                    message: "History",
+                    child: InkWell(
+                      child: Icon(
+                        Icons.history,
+                        size: 26,
+                        color: Theme.of(context).colorScheme.surface,
+                      ),
+                      onTap: () => Scaffold.of(context).openDrawer(),
+                    ),
+                  ),
+                ),
+              ),
               elevation: 50,
               expandedHeight: 70,
               centerTitle: true,
@@ -91,7 +108,6 @@ class _Conversations extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetX<ConversationController>(
-        init: ConversationController(),
         builder: (_) => SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) => Column(
@@ -116,7 +132,7 @@ class _Conversations extends StatelessWidget {
                               currentDateTime:
                                   _.conversations[index].ice!.currentDateTime,
                             )
-                          : TypeWriterMarkDown(
+                          : IceTypeWriterMarkDown(
                               index,
                               _.conversations[index].ice!.currentDateTime,
                             ),
@@ -175,10 +191,10 @@ class _MarkDownMessage extends StatelessWidget {
   }
 }
 
-class TypeWriterMarkDown extends GetWidget<ConversationController> {
+class IceTypeWriterMarkDown extends GetWidget<ConversationController> {
   final int index;
   final String currentDateTime;
-  TypeWriterMarkDown(this.index, this.currentDateTime);
+  IceTypeWriterMarkDown(this.index, this.currentDateTime);
 
   String handleContentAnimation() {
     if (controller.iceContent.value !=

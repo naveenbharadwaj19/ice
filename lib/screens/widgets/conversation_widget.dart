@@ -3,7 +3,13 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:ice_ai/controllers/conversation_controller.dart';
 
-class TypeBox extends StatelessWidget {
+class TypeBox extends StatefulWidget {
+  @override
+  State<TypeBox> createState() => _TypeBoxState();
+}
+
+class _TypeBoxState extends State<TypeBox> {
+  final GlobalKey<FormState> form = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return SliverFillRemaining(
@@ -34,7 +40,7 @@ class TypeBox extends StatelessWidget {
                     color: Theme.of(context).colorScheme.tertiary,
                   ),
                   child: Form(
-                    key: _.form,
+                    key: form,
                     child: TextFormField(
                       controller: _.controller,
                       validator: (v) {
@@ -60,7 +66,7 @@ class TypeBox extends StatelessWidget {
                             size: 24,
                             color: Theme.of(context).colorScheme.surface,
                           ),
-                          onTap: () => _.send(),
+                          onTap: () => _.send(form),
                         ),
                       ),
                     ),
